@@ -251,6 +251,7 @@ function render(){
     <div class="k">
       <div><small>Financiamento estimado</small><b>${brl(fin)}</b></div>
       <div><small>Subsídio estimado</small><b>${brl(sub)}</b></div>
+      <div><small>Financiamento + subsídio</small><b>${brl(fin+sub)}</b></div>
       <div><small>Parcela do banco aprox.</small><b>${brl(l.p)}</b></div>
       <div><small>Taxa de referência</small><b>${String(l.t).replace('.',',')}% a.a.</b></div>
     </div>
@@ -261,7 +262,8 @@ function render(){
     const chPend = p.cheque==='pendente' && im.cheque;
     // financiamento + subsídio + entrada + cheque precisam cobrir o preço;
     // o banco precisa aprovar pelo menos o valor indicado pela construtora.
-    const folgaAprov = fin - im.aprov;
+    // O subsídio entra como entrada: financiamento + subsídio precisam cobrir a aprovação.
+    const folgaAprov = fin + sub - im.aprov;
     const recursos = fin + sub + entrada + ch;
     const falta = Math.max(0, im.preco - recursos);
     let st;
@@ -274,7 +276,7 @@ function render(){
     // Entre os que cabem, o produto de maior valor vem primeiro (quanto maior a aprovação, mais opções no topo).
     const score = st==='ok' ? 1000 + (pr.length? hits/pr.length*300 : 0) + im.aprov/1000
       : (st==='warn'?500:0) + (pr.length? hits/pr.length*300 : 0) + folgaAprov/1000;
-    return {im, st, folgaAprov, falta, ch, chPend, pr, hits, score, cobre: Math.min(100, fin/im.aprov*100)};
+    return {im, st, folgaAprov, falta, ch, chPend, pr, hits, score, cobre: Math.min(100, (fin+sub)/im.aprov*100)};
   }).sort((a,b)=>b.score-a.score || b.im.preco-a.im.preco);
 
   const nOk = res.filter(r=>r.st!=='no').length;
@@ -294,14 +296,14 @@ function render(){
 
 function card(r, top, renda){
   const im = r.im;
-  const badge = r.st==='ok' ? '<span class="badge b-ok">Cabe no financiamento</span>'
+  const badge = r.st==='ok' ? '<span class="badge b-ok">Cabe na aprovação</span>'
     : r.st==='warn' ? `<span class="badge b-warn">Quase: faltam ${brl(-r.folgaAprov)} de aprovação</span>`
     : '<span class="badge b-no">Fora da renda hoje</span>';
   const pr = r.pr.length ? `<div class="prefs">${r.pr.map(x=>`<span class="${x[0]?'y':'n'}">${x[0]?'✓':'✗'} ${txt(x[1])}</span>`).join('')}</div>` : '';
   return `<article class="card${top?' top1':''}">
     ${top?'<div class="ribbon">Opção mais indicada para o perfil</div>':''}
     <div class="ch"><div><div class="cons">${txt(im.c)}</div><h3>${txt(im.n)}${im.b?' · '+txt(im.b):''}</h3></div>${badge}</div>
-    <div class="bar" title="Quanto o financiamento estimado cobre da aprovação necessária"><i style="width:${r.cobre.toFixed(0)}%;background:${r.st==='ok'?'var(--ok)':r.st==='warn'?'#e0a100':'var(--no)'}"></i></div>
+    <div class="bar" title="Quanto financiamento + subsídio cobrem da aprovação necessária"><i style="width:${r.cobre.toFixed(0)}%;background:${r.st==='ok'?'var(--ok)':r.st==='warn'?'#e0a100':'var(--no)'}"></i></div>
     <div class="facts">
       <div><small>Preço</small><b>${brl(im.preco)}</b></div>
       <div><small>Aprovação necessária</small>${brl(im.aprov)}${im.cheque?' + Cheque':''}</div>
@@ -314,9 +316,9 @@ function card(r, top, renda){
     </div>
     ${pr}
     <details class="more"><summary>Ver a conta</summary>
-      Financiamento estimado ${brl(im.aprov + r.folgaAprov)} contra ${brl(im.aprov)} de aprovação necessária (${r.folgaAprov>=0?'sobram':'faltam'} ${brl(Math.abs(r.folgaAprov))}).
+      Financiamento + subsídio estimados ${brl(im.aprov + r.folgaAprov)} contra ${brl(im.aprov)} de aprovação necessária (${r.folgaAprov>=0?'sobram':'faltam'} ${brl(Math.abs(r.folgaAprov))}).
       ${r.ch?'Cheque Moradia de '+brl(r.ch)+' considerado. ':''}${r.chPend?'Cheque Moradia pendente: se sair, entram mais '+brl(CHEQUE)+'. ':''}
-      ${r.falta>0?'Somando subsídio, entrada e cheque, ainda ficam '+brl(r.falta)+' para negociar com a construtora (sinal e mensais).':'Subsídio, entrada e cheque cobrem a diferença até o preço.'}
+      ${r.falta>0?'Somando entrada e cheque, ainda ficam '+brl(r.falta)+' para negociar com a construtora (sinal e mensais).':'Entrada e cheque cobrem a diferença até o preço.'}
       Documentação: ${txt(im.doc)}.
     </details>
   </article>`;
