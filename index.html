@@ -97,7 +97,12 @@ footer img{height:38px;display:block;margin:0 auto 8px}
     <label class="f" for="entrada">Dinheiro ou FGTS para entrada (opcional)</label>
     <input id="entrada" type="text" inputmode="numeric" placeholder="ex.: 10.000">
 
-    <label class="tg"><input type="checkbox" id="cheque"> Cliente tem direito ao Cheque Moradia</label>
+    <label class="f">Cheque Moradia</label>
+    <div class="chips" id="chq">
+      <label><input type="radio" name="cheque" value="tem"><span>Tem</span></label>
+      <label><input type="radio" name="cheque" value="pendente"><span>Pendente</span></label>
+      <label><input type="radio" name="cheque" value="nao" checked><span>Não elegível</span></label>
+    </div>
 
     <h2 style="margin-top:22px">2. Preferências</h2>
     <label class="f">Região de Uberlândia</label>
@@ -146,13 +151,11 @@ footer img{height:38px;display:block;margin:0 auto 8px}
 
 <footer>
   <img src="img/logo-torrano.svg" alt="Torrano Negócios Imobiliários">
-  Torrano Negócios Imobiliários · CRECI PJ/MG 7469 · Rua Benjamin Constant, 56, Uberlândia<br>
-  Atendimento: Marco Túlio · WhatsApp (34) 99677-8075
+  Torrano Negócios Imobiliários · CRECI PJ/MG 7469 · Rua Benjamin Constant, 56, Uberlândia
 </footer>
 
 <script src="tabela-mcmv.js"></script>
 <script>
-const WHATS = '5534996778075';
 // Portfólio Feirão da Habitação Torrano. aprov = valor que precisa ser aprovado no banco.
 // entrega: AAAAMM previsto pela construtora (semestre vira o último mês dele).
 const IMOVEIS = [
@@ -209,7 +212,7 @@ function prefs(){
     prazo:num($('prazo').value),
     fiador:$('pFiador').checked, lazer:$('pLazer').checked, sacada:$('pSacada').checked,
     suite:$('pSuite').checked, doc:$('pDoc').checked, maior:$('pMaior').checked,
-    cheque:$('cheque').checked
+    cheque:document.querySelector('input[name=cheque]:checked').value
   };
 }
 function avaliaPrefs(im, p){
@@ -223,7 +226,7 @@ function avaliaPrefs(im, p){
   if (p.suite) r.push([im.sui, im.sui?'Tem suíte':'Sem suíte']);
   if (p.doc) r.push([im.dg, im.doc]);
   if (p.maior) r.push([im.m2>=45, im.m]);
-  if (p.cheque) r.push([im.cheque, im.cheque?'Aceita Cheque Moradia':'Não aceita Cheque Moradia']);
+  if (p.cheque!=='nao') r.push([im.cheque, im.cheque?'Aceita Cheque Moradia':'Não aceita Cheque Moradia']);
   return r;
 }
 
@@ -254,7 +257,8 @@ function render(){
     <div style="font-size:12px;opacity:.8;margin-top:8px">Prazo considerado: ${aj.prazo} meses${aj.prazo<420?' (limitado pela idade)':''}. Teto do imóvel nessa renda: ${brl(teto)}.</div>`;
 
   const res = IMOVEIS.map(im => {
-    const ch = p.cheque && im.cheque ? CHEQUE : 0;
+    const ch = p.cheque==='tem' && im.cheque ? CHEQUE : 0;
+    const chPend = p.cheque==='pendente' && im.cheque;
     // financiamento + subsídio + entrada + cheque precisam cobrir o preço;
     // o banco precisa aprovar pelo menos o valor indicado pela construtora.
     const folgaAprov = fin - im.aprov;
@@ -267,9 +271,11 @@ function render(){
     else st = 'no';
     const pr = avaliaPrefs(im, p);
     const hits = pr.filter(x=>x[0]).length;
-    const score = (st==='ok'?1000:st==='warn'?500:0) + (pr.length? hits/pr.length*300 : 0) + Math.max(-100, Math.min(100, folgaAprov/1000)) - falta/2000;
-    return {im, st, folgaAprov, falta, ch, pr, hits, score, cobre: Math.min(100, fin/im.aprov*100)};
-  }).sort((a,b)=>b.score-a.score || a.im.preco-b.im.preco);
+    // Entre os que cabem, o produto de maior valor vem primeiro (quanto maior a aprovação, mais opções no topo).
+    const score = st==='ok' ? 1000 + (pr.length? hits/pr.length*300 : 0) + im.aprov/1000
+      : (st==='warn'?500:0) + (pr.length? hits/pr.length*300 : 0) + folgaAprov/1000;
+    return {im, st, folgaAprov, falta, ch, chPend, pr, hits, score, cobre: Math.min(100, fin/im.aprov*100)};
+  }).sort((a,b)=>b.score-a.score || b.im.preco-a.im.preco);
 
   const nOk = res.filter(r=>r.st!=='no').length;
   $('tabs').hidden = false;
@@ -280,21 +286,12 @@ function render(){
   });
   const mostra = aba==='cabe' ? res.filter(r=>r.st!=='no') : res;
   if (!mostra.length){
-    lista.innerHTML = `<div class="panel empty">Com essa renda, nenhum empreendimento do Feirão fecha só no financiamento. Com renda maior compondo (cônjuge, familiar) ou entrada, a conta muda.<div class="acts" style="justify-content:center">${btnWhats(renda,null)}</div></div>`;
+    lista.innerHTML = `<div class="panel empty">Com essa renda, nenhum empreendimento do Feirão fecha só no financiamento. Com renda maior compondo (cônjuge, familiar) ou entrada, a conta muda.</div>`;
     return;
   }
   lista.innerHTML = mostra.map((r,i) => card(r, i===0 && r.st!=='no', renda)).join('');
 }
 
-function msgWhats(renda, im){
-  let m = `Oi, Marco! Vim pelo Feirão da Habitação Torrano. Renda familiar de ${brl(renda)}.`;
-  if (im) m += ` Tenho interesse no ${im.n} (${im.c}).`;
-  m += ' Quero deixar renda, FGTS e documentos prontos para a análise de crédito da Caixa.';
-  return 'https://wa.me/' + WHATS + '?text=' + encodeURIComponent(m);
-}
-function btnWhats(renda, im){
-  return `<a class="btn" href="${msgWhats(renda, im)}" target="_blank" rel="noopener">Chamar no WhatsApp para a análise de crédito</a>`;
-}
 function card(r, top, renda){
   const im = r.im;
   const badge = r.st==='ok' ? '<span class="badge b-ok">Cabe no financiamento</span>'
@@ -318,11 +315,10 @@ function card(r, top, renda){
     ${pr}
     <details class="more"><summary>Ver a conta</summary>
       Financiamento estimado ${brl(im.aprov + r.folgaAprov)} contra ${brl(im.aprov)} de aprovação necessária (${r.folgaAprov>=0?'sobram':'faltam'} ${brl(Math.abs(r.folgaAprov))}).
-      ${r.ch?'Cheque Moradia de '+brl(r.ch)+' considerado. ':''}
+      ${r.ch?'Cheque Moradia de '+brl(r.ch)+' considerado. ':''}${r.chPend?'Cheque Moradia pendente: se sair, entram mais '+brl(CHEQUE)+'. ':''}
       ${r.falta>0?'Somando subsídio, entrada e cheque, ainda ficam '+brl(r.falta)+' para negociar com a construtora (sinal e mensais).':'Subsídio, entrada e cheque cobrem a diferença até o preço.'}
       Documentação: ${txt(im.doc)}.
     </details>
-    <div class="acts">${btnWhats(renda, im)}</div>
   </article>`;
 }
 
