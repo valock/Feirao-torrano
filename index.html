@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Feirão da Habitação Torrano | Qual imóvel cabe na renda</title>
+<meta name="description" content="Digite a renda do cliente, marque as preferências e veja quais empreendimentos do Feirão da Habitação Torrano em Uberlândia cabem no Minha Casa Minha Vida.">
+<link rel="icon" href="img/logo-torrano.svg">
+<style>
+:root{--red:#ED1C24;--red2:#c4141b;--ink:#231F20;--navy:#0f2a56;--mut:#5d6470;--bg:#f4f6fa;--card:#fff;--line:#e2e6ee;--ok:#13804a;--okbg:#e6f6ec;--warn:#9a6200;--warnbg:#fff4dc;--no:#a12a2a;--nobg:#fbe9e9}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.45}
+header{background:var(--navy);color:#fff;padding:18px 16px 22px}
+.wrap{max-width:1080px;margin:0 auto}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.top img{height:44px}
+.top .tag{font-size:13px;opacity:.85}
+h1{font-size:clamp(22px,4vw,32px);margin:16px 0 4px}
+h1 span{color:#ffd23f}
+header p{margin:0;opacity:.9}
+main{padding:20px 16px 40px}
+.grid{display:grid;grid-template-columns:340px 1fr;gap:20px;align-items:start}
+@media(max-width:860px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+.panel h2{font-size:17px;margin:0 0 12px}
+label.f{display:block;font-weight:600;font-size:14px;margin:14px 0 6px}
+input[type=text],input[type=number],select{width:100%;padding:11px 12px;border:1px solid #c9cfda;border-radius:10px;font-size:16px;background:#fff;color:var(--ink)}
+.renda{font-size:22px!important;font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips label{cursor:pointer}
+.chips input{position:absolute;opacity:0;pointer-events:none}
+.chips span{display:inline-block;padding:7px 11px;border:1px solid #c9cfda;border-radius:999px;font-size:13px;background:#fff;user-select:none}
+.chips input:checked+span{background:var(--navy);border-color:var(--navy);color:#fff}
+.chips input:focus-visible+span{outline:2px solid var(--red);outline-offset:2px}
+.tg{display:flex;align-items:center;gap:8px;font-size:14px;margin:8px 0;cursor:pointer}
+.tg input{width:18px;height:18px;accent-color:var(--red)}
+.hint{font-size:12px;color:var(--mut);margin-top:4px}
+.resumo{background:var(--navy);color:#fff;border-radius:14px;padding:16px 18px;margin-bottom:16px}
+.resumo .k{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:10px}
+.resumo .k div{background:rgba(255,255,255,.08);border-radius:10px;padding:10px}
+.resumo small{display:block;opacity:.8;font-size:12px}
+.resumo b{font-size:19px}
+.empty{color:var(--mut);text-align:center;padding:40px 10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px;position:relative}
+.card.top1{border:2px solid var(--red);box-shadow:0 6px 20px rgba(237,28,36,.12)}
+.ribbon{position:absolute;top:-11px;left:14px;background:var(--red);color:#fff;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px}
+.ch{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.ch h3{margin:0;font-size:18px}
+.ch .cons{font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
+.badge{font-size:12px;font-weight:700;padding:4px 9px;border-radius:999px;white-space:nowrap;align-self:flex-start}
+.b-ok{background:var(--okbg);color:var(--ok)}.b-warn{background:var(--warnbg);color:var(--warn)}.b-no{background:var(--nobg);color:var(--no)}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px 14px;margin:12px 0;font-size:14px}
+.facts small{display:block;color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.03em}
+.prefs{display:flex;flex-wrap:wrap;gap:6px;font-size:12px}
+.prefs span{padding:3px 8px;border-radius:6px;background:#eef1f6}
+.prefs .y{background:var(--okbg);color:var(--ok)}.prefs .n{background:var(--nobg);color:var(--no)}
+.bar{height:8px;background:#e9edf3;border-radius:99px;overflow:hidden;margin:10px 0 4px}
+.bar i{display:block;height:100%;background:var(--ok)}
+.btn{display:inline-flex;align-items:center;gap:8px;background:#1fa855;color:#fff;text-decoration:none;font-weight:700;border-radius:10px;padding:11px 14px;font-size:14px;border:0;cursor:pointer}
+.btn.sec{background:#fff;color:var(--navy);border:1px solid var(--navy)}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+details.more{margin-top:8px;font-size:13px;color:var(--mut)}
+.tabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.tabs button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer}
+.tabs button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.aviso{font-size:12px;color:var(--mut);margin-top:18px}
+footer{background:#fff;border-top:4px solid var(--red);padding:20px 16px;text-align:center;font-size:13px;color:var(--mut)}
+footer img{height:38px;display:block;margin:0 auto 8px}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="top">
+      <img src="img/logo-torrano-branco.svg" alt="Torrano Negócios Imobiliários">
+      <div class="tag">Feirão da Habitação · Uberlândia</div>
+    </div>
+    <h1>Qual imóvel do Feirão <span>cabe na renda</span> do cliente?</h1>
+    <p>Digite a renda, marque o que o cliente prefere e veja as opções em ordem de encaixe.</p>
+  </div>
+</header>
+
+<main>
+<div class="wrap grid">
+  <form class="panel" id="form" autocomplete="off" onsubmit="return false">
+    <h2>1. Renda e perfil</h2>
+    <label class="f" for="renda">Renda bruta familiar (R$ por mês)</label>
+    <input class="renda" id="renda" type="text" inputmode="numeric" placeholder="ex.: 3.500">
+    <div class="hint">Some a renda de todos que vão compor (casal, por exemplo).</div>
+
+    <label class="tg"><input type="checkbox" id="cotista"> Tem 3 anos ou mais de carteira assinada (FGTS)</label>
+    <label class="tg"><input type="checkbox" id="dep"> Casado ou tem filho/dependente</label>
+
+    <label class="f" for="ano">Ano de nascimento do mais velho (opcional)</label>
+    <input id="ano" type="number" inputmode="numeric" placeholder="ex.: 1990" min="1940" max="2010">
+
+    <label class="f" for="entrada">Dinheiro ou FGTS para entrada (opcional)</label>
+    <input id="entrada" type="text" inputmode="numeric" placeholder="ex.: 10.000">
+
+    <label class="tg"><input type="checkbox" id="cheque"> Cliente tem direito ao Cheque Moradia</label>
+
+    <h2 style="margin-top:22px">2. Preferências</h2>
+    <label class="f">Região de Uberlândia</label>
+    <div class="chips" id="zonas">
+      <label><input type="checkbox" value="Sul"><span>Zona Sul</span></label>
+      <label><input type="checkbox" value="Leste"><span>Zona Leste</span></label>
+      <label><input type="checkbox" value="Oeste"><span>Zona Oeste</span></label>
+      <label><input type="checkbox" value="Norte"><span>Zona Norte</span></label>
+    </div>
+    <label class="f">Tipo de imóvel</label>
+    <div class="chips" id="tipo">
+      <label><input type="radio" name="tipo" value="" checked><span>Tanto faz</span></label>
+      <label><input type="radio" name="tipo" value="apto"><span>Apartamento</span></label>
+      <label><input type="radio" name="tipo" value="casa"><span>Casa</span></label>
+    </div>
+    <label class="f" for="prazo">Quer mudar até</label>
+    <select id="prazo">
+      <option value="">Tanto faz</option>
+      <option value="202712">Fim de 2027</option>
+      <option value="202806">Meio de 2028</option>
+      <option value="202812">Fim de 2028</option>
+    </select>
+    <label class="f">Faz questão de</label>
+    <label class="tg"><input type="checkbox" id="pFiador"> Não precisar de fiador</label>
+    <label class="tg"><input type="checkbox" id="pLazer"> Lazer completo</label>
+    <label class="tg"><input type="checkbox" id="pSacada"> Sacada</label>
+    <label class="tg"><input type="checkbox" id="pSuite"> Opção com suíte</label>
+    <label class="tg"><input type="checkbox" id="pDoc"> Documentação grátis</label>
+    <label class="tg"><input type="checkbox" id="pMaior"> Mais espaço (45 m² ou mais)</label>
+  </form>
+
+  <section>
+    <div class="resumo" id="resumo">
+      <b>Comece digitando a renda do cliente.</b>
+      <div style="opacity:.85;font-size:14px;margin-top:4px">A conta usa a tabela do Minha Casa Minha Vida (04/2026, imóvel na planta, Uberlândia), a mesma do meu simulador.</div>
+    </div>
+    <div class="tabs" id="tabs" hidden>
+      <button type="button" data-v="cabe" class="on">Cabem na renda</button>
+      <button type="button" data-v="todos">Todos</button>
+    </div>
+    <div id="lista"></div>
+    <p class="aviso">Valores e condições do portfólio do Feirão da Habitação Torrano, sujeitos a alteração e à disponibilidade de unidades. A conta é uma estimativa: o financiamento, o subsídio e a taxa reais só saem na análise de crédito da Caixa, e não há garantia de aprovação. Datas de entrega são previsões das construtoras e podem mudar. Para uma simulação completa, use <a href="https://simulador.marcotulio.pro/" target="_blank" rel="noopener">simulador.marcotulio.pro</a>.</p>
+  </section>
+</div>
+</main>
+
+<footer>
+  <img src="img/logo-torrano.svg" alt="Torrano Negócios Imobiliários">
+  Torrano Negócios Imobiliários · CRECI PJ/MG 7469 · Rua Benjamin Constant, 56, Uberlândia<br>
+  Atendimento: Marco Túlio · WhatsApp (34) 99677-8075
+</footer>
+
+<script src="tabela-mcmv.js"></script>
+<script>
+const WHATS = '5534996778075';
+// Portfólio Feirão da Habitação Torrano. aprov = valor que precisa ser aprovado no banco.
+// entrega: AAAAMM previsto pela construtora (semestre vira o último mês dele).
+const IMOVEIS = [
+ {c:'Barbosa Amorim',n:'Loft 1',b:'',z:'',tipo:'apto',cheque:false,tip:'1 quarto',m:'36 m²',m2:36,lazer:'Básico',lc:false,ent:'Segundo semestre de 2027',e:202712,preco:175000,aprov:140000,mens:'36',parc:'R$ 1.000',fiador:true,doc:'Doc grátis',dg:true,sac:false,sui:false},
+ {c:'Primeiro Lar',n:'Horizon',b:'',z:'',tipo:'apto',cheque:true,tip:'2 quartos com sacada',m:'45 m²',m2:45,lazer:'Completo',lc:true,ent:'Dez/29',e:202912,preco:224000,aprov:160000,mens:'72',parc:'R$ 700',fiador:true,doc:'Doc grátis, produto pago',dg:true,sac:true,sui:false},
+ {c:'Petra',n:'Villa Castelli',b:'Chácaras Tubalina',z:'Oeste',tipo:'apto',cheque:true,tip:'Bloco, 4 andares',m:'45 m²',m2:45,lazer:'Completo',lc:true,ent:'Out/28',e:202810,preco:226000,aprov:160000,mens:'72',parc:'R$ 762',fiador:true,doc:'Doc parcelado',dg:false,sac:false,sui:false},
+ {c:'Realiza',n:'Prime Clube II',b:'Granja Marileuza',z:'Leste',tipo:'apto',cheque:true,tip:'Bloco térreo +3, 2 quartos',m:'40 m²',m2:40,lazer:'Completo',lc:true,ent:'Dez/28',e:202812,preco:227900,aprov:160000,mens:'72',parc:'R$ 760',fiador:true,doc:'Doc grátis, produto grátis',dg:true,sac:false,sui:false},
+ {c:'MRV',n:'Trilhas dos Rios',b:'Jardim Holanda',z:'Oeste',tipo:'apto',cheque:true,tip:'Bloco, 4 andares, 2 quartos',m:'42 m²',m2:42,lazer:'Completo (menos piscina)',lc:false,ent:'Dez/27',e:202712,preco:228000,aprov:163000,mens:'72',parc:'R$ 800',fiador:false,doc:'Doc grátis, produto grátis',dg:true,sac:false,sui:false},
+ {c:'Tecnova',n:'Park Bélgica',b:'Morumbi',z:'Leste',tipo:'apto',cheque:true,tip:'Torre única, 2 quartos',m:'45 m²',m2:45,lazer:'Área gourmet',lc:false,ent:'Dez/29',e:202912,preco:225000,aprov:163000,mens:'70',parc:'R$ 1.000',fiador:true,doc:'Doc grátis, produto grátis',dg:true,sac:false,sui:false},
+ {c:'INC',n:'Jardim do Sol',b:'Novo Mundo',z:'Leste',tipo:'apto',cheque:true,tip:'2 quartos',m:'39 m²',m2:39,lazer:'Completo',lc:true,ent:'Mai/29',e:202905,preco:225000,aprov:165000,mens:'120',parc:'R$ 500',fiador:true,doc:'Doc grátis',dg:true,sac:false,sui:false},
+ {c:'Vitta',n:'Jardim Sul',b:'Shopping Park',z:'Sul',tipo:'apto',cheque:true,tip:'Bloco térreo +3, 2 quartos',m:'40 m²',m2:40,lazer:'Completo',lc:true,ent:'Jun/28',e:202806,preco:228000,aprov:165000,mens:'72',parc:'R$ 740',fiador:true,doc:'Doc grátis, produto pago',dg:true,sac:false,sui:false},
+ {c:'HLTS',n:'Arbi',b:'Shopping Park',z:'Sul',tipo:'apto',cheque:true,tip:'2 quartos, sacada, com e sem suíte',m:'47 a 50 m²',m2:47,lazer:'Completo',lc:true,ent:'Mar/28',e:202803,preco:240000,aprov:170000,mens:'60',parc:'Pré R$ 1.200, pós R$ 850',fiador:true,doc:'Doc grátis, produto grátis',dg:true,sac:true,sui:true},
+ {c:'HLTS',n:'Oásis',b:'Chácaras Tubalina',z:'Oeste',tipo:'apto',cheque:true,tip:'2 quartos com sacada',m:'47 m²',m2:47,lazer:'Completo',lc:true,ent:'Nov/28',e:202811,preco:242000,aprov:170000,mens:'60',parc:'Pré R$ 1.200, pós R$ 850',fiador:true,doc:'Doc grátis, produto grátis',dg:true,sac:true,sui:false},
+ {c:'MOR',n:'Jardim Mansour',b:'Mansour',z:'Oeste',tipo:'apto',cheque:true,tip:'Torre, sacada e suíte',m:'47 e 51 m²',m2:47,lazer:'Completo',lc:true,ent:'Jul/28',e:202807,preco:230000,aprov:170000,mens:'72',parc:'R$ 682',fiador:true,doc:'Doc grátis, produto grátis',dg:true,sac:true,sui:true},
+ {c:'VIC',n:'Gran Vic',b:'Shopping Park',z:'Sul',tipo:'apto',cheque:true,tip:'Torre 15 andares com sacada',m:'37 e 39 m²',m2:37,lazer:'Completo',lc:true,ent:'Nov/29',e:202911,preco:217000,aprov:170000,mens:'72',parc:'R$ 550',fiador:false,doc:'Doc grátis, produto pago',dg:true,sac:true,sui:false},
+ {c:'Tecnova',n:'Park Holanda',b:'Jardim Holanda',z:'Oeste',tipo:'apto',cheque:true,tip:'Torre com sacada, com e sem suíte',m:'47 e 55 m²',m2:47,lazer:'Completo sem piscina',lc:false,ent:'Primeiro semestre de 2028',e:202806,preco:227000,aprov:170000,mens:'60',parc:'R$ 970',fiador:true,doc:'Doc grátis, produto pago',dg:true,sac:true,sui:true},
+ {c:'MRV',n:'Los Cabos',b:'Chácaras Tubalina',z:'Oeste',tipo:'apto',cheque:true,tip:'Torre, com e sem sacada',m:'43 m²',m2:43,lazer:'Completo',lc:true,ent:'Nov/28',e:202811,preco:240000,aprov:180000,mens:'60',parc:'R$ 900',fiador:false,doc:'Doc grátis, produto grátis',dg:true,sac:true,sui:false},
+ {c:'Rummo',n:'Solis',b:'Morumbi',z:'Leste',tipo:'apto',cheque:true,tip:'Torre 11 andares, sacada e suíte',m:'60 m²',m2:60,lazer:'Completo',lc:true,ent:'Segundo semestre de 2028',e:202812,preco:260000,aprov:180000,mens:'196',parc:'Pré chaves R$ 1.000, pós chaves R$ 453',fiador:false,doc:'Doc grátis, produto grátis',dg:true,sac:true,sui:true},
+ {c:'Tecnova',n:'Casas Morumbi',b:'Morumbi',z:'Leste',tipo:'casa',cheque:false,tip:'Casa geminada',m:'43 m² construídos, 83 m² de área',m2:43,lazer:'Sem lazer',lc:false,ent:'Ago/27',e:202708,preco:229000,aprov:183000,mens:'R$ 6 mil de sinal + 48x',parc:'R$ 1.053',fiador:true,doc:'Doc grátis, taxas Caixa pagas',dg:true,sac:false,sui:false},
+ {c:'MRV',n:'Soul',b:'Jardim Sul',z:'Sul',tipo:'apto',cheque:true,tip:'Torre com sacada, com e sem suíte',m:'45 m²',m2:45,lazer:'Completo',lc:true,ent:'Mar/28',e:202803,preco:260000,aprov:190000,mens:'60',parc:'R$ 900',fiador:false,doc:'Doc grátis, produto grátis',dg:true,sac:true,sui:true},
+ {c:'MRV',n:'Trilhas do Horizonte',b:'Jardim Patrícia',z:'Oeste',tipo:'apto',cheque:false,tip:'Torre, 2 quartos com sacada e suíte',m:'44 e 48 m²',m2:44,lazer:'Completo',lc:true,ent:'Dez/27',e:202712,preco:244000,aprov:194000,mens:'48',parc:'R$ 1.080',fiador:false,doc:'Doc grátis, produto grátis',dg:true,sac:true,sui:true},
+ {c:'Vitta',n:'Matiz',b:'Industrial',z:'Norte',tipo:'apto',cheque:true,tip:'Torre 16 andares, 2 quartos',m:'43 m²',m2:43,lazer:'Completo',lc:true,ent:'Jul/27',e:202707,preco:255000,aprov:195000,mens:'72',parc:'R$ 800',fiador:true,doc:'Doc grátis, produto pago',dg:true,sac:false,sui:false},
+ {c:'Pacaembu',n:'Sabará Residence',b:'Zona Sul',z:'Sul',tipo:'casa',cheque:true,tip:'Casa em condomínio, 2 quartos',m:'45 m² de casa, 126 m² de terreno',m2:45,lazer:'Completo',lc:true,ent:'Jun/28',e:202806,preco:250000,aprov:196000,mens:'60',parc:'Sinal R$ 1.500 + pré R$ 1.200, pós R$ 500',fiador:true,doc:'Doc grátis, produto grátis',dg:true,sac:false,sui:false},
+];
+const CHEQUE = 10000;
+const $ = id => document.getElementById(id);
+const num = s => parseInt(String(s||'').replace(/\D/g,''),10) || 0;
+const brl = v => 'R$ ' + Math.round(v).toLocaleString('pt-BR');
+let aba = 'cabe';
+
+function linhaTabela(renda, cotista, dep){
+  let t;
+  if (renda >= 10000) t = TABELA.classe_media;
+  else t = TABELA[(cotista?'cotista':'nao_cotista') + (dep?'_com_dep':'_sem_dep')];
+  let l = t[0];
+  for (const it of t){ if (it.r <= renda) l = it; else break; }
+  return l;
+}
+function ajustePrazo(l, ano){
+  if (!ano || ano < 1940) return {f:l.f, prazo:420};
+  const prazo = Math.min(420, 962 - (new Date().getFullYear() - ano) * 12);
+  if (prazo <= 0) return {f:0, prazo:0};
+  if (prazo >= 420) return {f:l.f, prazo:420};
+  const i = Math.pow(1 + l.t/100, 1/12) - 1;
+  const fat = n => (1 - Math.pow(1+i, -n)) / i;
+  return {f: l.f * fat(prazo) / fat(420), prazo};
+}
+function txt(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]); }
+
+function prefs(){
+  return {
+    zonas:[...document.querySelectorAll('#zonas input:checked')].map(i=>i.value),
+    tipo:document.querySelector('input[name=tipo]:checked').value,
+    prazo:num($('prazo').value),
+    fiador:$('pFiador').checked, lazer:$('pLazer').checked, sacada:$('pSacada').checked,
+    suite:$('pSuite').checked, doc:$('pDoc').checked, maior:$('pMaior').checked,
+    cheque:$('cheque').checked
+  };
+}
+function avaliaPrefs(im, p){
+  const r = [];
+  if (p.zonas.length) r.push([p.zonas.includes(im.z), im.z ? 'Zona '+im.z : 'Região a confirmar']);
+  if (p.tipo) r.push([im.tipo===p.tipo, im.tipo==='casa'?'Casa':'Apartamento']);
+  if (p.prazo) r.push([im.e <= p.prazo, 'Entrega prevista '+im.ent]);
+  if (p.fiador) r.push([!im.fiador, im.fiador?'Precisa de fiador':'Sem fiador']);
+  if (p.lazer) r.push([im.lc, 'Lazer: '+im.lazer]);
+  if (p.sacada) r.push([im.sac, im.sac?'Sacada':'Sem sacada']);
+  if (p.suite) r.push([im.sui, im.sui?'Tem suíte':'Sem suíte']);
+  if (p.doc) r.push([im.dg, im.doc]);
+  if (p.maior) r.push([im.m2>=45, im.m]);
+  if (p.cheque) r.push([im.cheque, im.cheque?'Aceita Cheque Moradia':'Não aceita Cheque Moradia']);
+  return r;
+}
+
+function render(){
+  const renda = num($('renda').value);
+  const lista = $('lista');
+  if (renda < 1000){
+    $('tabs').hidden = true;
+    lista.innerHTML = '<div class="empty">Digite a renda para ver as opções.</div>';
+    return;
+  }
+  const cot = $('cotista').checked, dep = $('dep').checked;
+  const l = linhaTabela(renda, cot, dep);
+  const aj = ajustePrazo(l, num($('ano').value));
+  const fin = aj.f, sub = renda >= 10000 ? 0 : l.s;
+  const entrada = num($('entrada').value);
+  const p = prefs();
+  const teto = renda <= 4000 ? 260000 : 400000;
+
+  $('resumo').innerHTML = `
+    <b>Renda de ${brl(renda)}</b>
+    <div class="k">
+      <div><small>Financiamento estimado</small><b>${brl(fin)}</b></div>
+      <div><small>Subsídio estimado</small><b>${brl(sub)}</b></div>
+      <div><small>Parcela do banco aprox.</small><b>${brl(l.p)}</b></div>
+      <div><small>Taxa de referência</small><b>${String(l.t).replace('.',',')}% a.a.</b></div>
+    </div>
+    <div style="font-size:12px;opacity:.8;margin-top:8px">Prazo considerado: ${aj.prazo} meses${aj.prazo<420?' (limitado pela idade)':''}. Teto do imóvel nessa renda: ${brl(teto)}.</div>`;
+
+  const res = IMOVEIS.map(im => {
+    const ch = p.cheque && im.cheque ? CHEQUE : 0;
+    // financiamento + subsídio + entrada + cheque precisam cobrir o preço;
+    // o banco precisa aprovar pelo menos o valor indicado pela construtora.
+    const folgaAprov = fin - im.aprov;
+    const recursos = fin + sub + entrada + ch;
+    const falta = Math.max(0, im.preco - recursos);
+    let st;
+    if (im.preco > teto) st = 'no';
+    else if (folgaAprov >= 0) st = 'ok';
+    else if (folgaAprov >= -15000) st = 'warn';
+    else st = 'no';
+    const pr = avaliaPrefs(im, p);
+    const hits = pr.filter(x=>x[0]).length;
+    const score = (st==='ok'?1000:st==='warn'?500:0) + (pr.length? hits/pr.length*300 : 0) + Math.max(-100, Math.min(100, folgaAprov/1000)) - falta/2000;
+    return {im, st, folgaAprov, falta, ch, pr, hits, score, cobre: Math.min(100, fin/im.aprov*100)};
+  }).sort((a,b)=>b.score-a.score || a.im.preco-b.im.preco);
+
+  const nOk = res.filter(r=>r.st!=='no').length;
+  $('tabs').hidden = false;
+  [...$('tabs').children].forEach(b => {
+    b.classList.toggle('on', b.dataset.v===aba);
+    if (b.dataset.v==='cabe') b.textContent = `Cabem ou quase (${nOk})`;
+    if (b.dataset.v==='todos') b.textContent = `Todos (${res.length})`;
+  });
+  const mostra = aba==='cabe' ? res.filter(r=>r.st!=='no') : res;
+  if (!mostra.length){
+    lista.innerHTML = `<div class="panel empty">Com essa renda, nenhum empreendimento do Feirão fecha só no financiamento. Com renda maior compondo (cônjuge, familiar) ou entrada, a conta muda.<div class="acts" style="justify-content:center">${btnWhats(renda,null)}</div></div>`;
+    return;
+  }
+  lista.innerHTML = mostra.map((r,i) => card(r, i===0 && r.st!=='no', renda)).join('');
+}
+
+function msgWhats(renda, im){
+  let m = `Oi, Marco! Vim pelo Feirão da Habitação Torrano. Renda familiar de ${brl(renda)}.`;
+  if (im) m += ` Tenho interesse no ${im.n} (${im.c}).`;
+  m += ' Quero deixar renda, FGTS e documentos prontos para a análise de crédito da Caixa.';
+  return 'https://wa.me/' + WHATS + '?text=' + encodeURIComponent(m);
+}
+function btnWhats(renda, im){
+  return `<a class="btn" href="${msgWhats(renda, im)}" target="_blank" rel="noopener">Chamar no WhatsApp para a análise de crédito</a>`;
+}
+function card(r, top, renda){
+  const im = r.im;
+  const badge = r.st==='ok' ? '<span class="badge b-ok">Cabe no financiamento</span>'
+    : r.st==='warn' ? `<span class="badge b-warn">Quase: faltam ${brl(-r.folgaAprov)} de aprovação</span>`
+    : '<span class="badge b-no">Fora da renda hoje</span>';
+  const pr = r.pr.length ? `<div class="prefs">${r.pr.map(x=>`<span class="${x[0]?'y':'n'}">${x[0]?'✓':'✗'} ${txt(x[1])}</span>`).join('')}</div>` : '';
+  return `<article class="card${top?' top1':''}">
+    ${top?'<div class="ribbon">Opção mais indicada para o perfil</div>':''}
+    <div class="ch"><div><div class="cons">${txt(im.c)}</div><h3>${txt(im.n)}${im.b?' · '+txt(im.b):''}</h3></div>${badge}</div>
+    <div class="bar" title="Quanto o financiamento estimado cobre da aprovação necessária"><i style="width:${r.cobre.toFixed(0)}%;background:${r.st==='ok'?'var(--ok)':r.st==='warn'?'#e0a100':'var(--no)'}"></i></div>
+    <div class="facts">
+      <div><small>Preço</small><b>${brl(im.preco)}</b></div>
+      <div><small>Aprovação necessária</small>${brl(im.aprov)}${im.cheque?' + Cheque':''}</div>
+      <div><small>Tipologia</small>${txt(im.tip)}</div>
+      <div><small>Metragem</small>${txt(im.m)}</div>
+      <div><small>Lazer</small>${txt(im.lazer)}</div>
+      <div><small>Entrega prevista</small>${txt(im.ent)}</div>
+      <div><small>Mensais com a construtora</small>${txt(im.mens)} · ${txt(im.parc)}</div>
+      <div><small>Fiador</small>${im.fiador?'Precisa':'Não precisa'}</div>
+    </div>
+    ${pr}
+    <details class="more"><summary>Ver a conta</summary>
+      Financiamento estimado ${brl(im.aprov + r.folgaAprov)} contra ${brl(im.aprov)} de aprovação necessária (${r.folgaAprov>=0?'sobram':'faltam'} ${brl(Math.abs(r.folgaAprov))}).
+      ${r.ch?'Cheque Moradia de '+brl(r.ch)+' considerado. ':''}
+      ${r.falta>0?'Somando subsídio, entrada e cheque, ainda ficam '+brl(r.falta)+' para negociar com a construtora (sinal e mensais).':'Subsídio, entrada e cheque cobrem a diferença até o preço.'}
+      Documentação: ${txt(im.doc)}.
+    </details>
+    <div class="acts">${btnWhats(renda, im)}</div>
+  </article>`;
+}
+
+$('renda').addEventListener('input', e => { const n = num(e.target.value); e.target.value = n ? n.toLocaleString('pt-BR') : ''; render(); });
+$('entrada').addEventListener('input', e => { const n = num(e.target.value); e.target.value = n ? n.toLocaleString('pt-BR') : ''; render(); });
+$('form').addEventListener('change', render);
+$('ano').addEventListener('input', render);
+$('tabs').addEventListener('click', e => { if (e.target.dataset.v){ aba = e.target.dataset.v; render(); } });
+render();
+</script>
+</body>
+</html>
